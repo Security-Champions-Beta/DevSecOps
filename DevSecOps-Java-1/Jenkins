@@ -1,0 +1,45 @@
+pipeline {
+	agent any
+	stages {
+		stage ("Git checkout"){
+			steps {
+				git branch: "main",
+					url: "https://github.com/NarbehJackson/minitwit16.git"
+				sh "ls"
+			}
+		}
+		stage ("Git Found Secret With Trufflehog"){
+			steps {
+				sh "trufflehog --regex --entropy=False https://github.com/NarbehJackson/minitwit16.git > 1.json | true"
+			}
+
+		}
+		stage ("SAST"){
+			steps{
+				snykSecurity(
+          		snykInstallation: 'Snyk',
+          		snykTokenId: 'Snyk',
+          		failOnIssues: 'false',
+          		failOnError: 'false',
+        	)	
+			}
+		}
+		stage ("Sonar Check"){
+			steps{
+			    
+				sh "mvn clean verify sonar:sonar && Dsonar.projectKey=test10 && Dsonar.host.url=https://yourdomain && Dsonar.login=c8ab9e42f9yourkeycec6bb852"
+			}
+		}
+		stage ("Build"){
+			steps{
+				sh "docker run -it -d --rm --name my-maven-project -v $WORKSPACE:/usr/src/mymaven -p 4567:4567 -w /usr/src/mymaven mhnamadi/minitwit16java mvn compile exec:java"
+				sh "sleep 400"
+			}
+		}
+		stage ("DAST"){
+			steps{
+				sh "docker run --user 0 -v $WORKSPACE:/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t  http://192.168.3.129:4567 -r baseline_report.html || true"
+			}
+		}					
+	}
+}
