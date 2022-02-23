@@ -27,7 +27,7 @@ First Please see Jenkinsfile Pipeline
 
 1 . Git Found Secret With Trufflehog (1 min)
 
-     trufflehog --regex --entropy=False https://github.com/ NarbehJackson/minitwit16.git > 1.json | true
+     trufflehog --regex --entropy=False https://github.com/NarbehJackson/minitwit16.git > 1.json | true
 
   Find Secret 
 
