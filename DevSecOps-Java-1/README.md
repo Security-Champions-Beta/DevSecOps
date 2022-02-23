@@ -20,6 +20,8 @@ https://www.zaproxy.org/
 
 ## Sample DEVSECOPS Pipeline With Jenkins 
 
+First Please see Jenkinsfile Pipeline
+
  ![Getting Started](34.png)
 
 
