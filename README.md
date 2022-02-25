@@ -13,7 +13,7 @@ DevSecOps, a relatively new term in the application security (AppSec) space, is 
 
 ![Getting Started](33.png)
 
-### Withouth DecSecOps ###
+### Without DecSecOps ###
 
 ![Getting Started](31.png)
 
