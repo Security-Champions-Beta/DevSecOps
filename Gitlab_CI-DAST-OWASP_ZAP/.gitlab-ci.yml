@@ -1,0 +1,37 @@
+stages:
+  - custom_dast
+
+owasp_zap:
+  image: 
+    name: docker:stable
+  stage: custom_dast
+  variables:
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:dind
+  before_script:
+    - apk add curl
+    - apk add python3 py3-pip openjdk8 bash
+    - pip3 install requests python-owasp-zap-v2.4
+    - pwd
+    - mkdir -p ./zap && cd ./zap
+    - wget https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/ZAP_2.9.0_Linux.tar.gz
+    - tar -zxvf ZAP_2.9.0_Linux.tar.gz && rm ZAP_2.9.0_Linux.tar.gz
+    - cd ZAP_2.9.0/plugin && wget https://github.com/zaproxy/zap-extensions/releases/download/exportreport-v6/exportreport-alpha-6.zap && cd $CI_PROJECT_DIR
+    - echo 'export PATH_ZAP_SH=./zap/ZAP_2.9.0/zap.sh' >> ~/.bashrc
+    - echo 'export ZAP_PORT=8090' >> ~/.bashrc
+    - echo "Running Target Application"
+    - docker build -t test:${CI_COMMIT_SHA} .
+    - docker run -d -p 5050:5050 --name vul_flask --restart on-failure test:${CI_COMMIT_SHA}
+    - sleep 10
+    - docker ps
+    - curl -XGET -i http://docker:5050 || true
+    - ./zap/ZAP_2.9.0/zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.addrs.addr.name=".*" -config api.addrs.addr.regex=true -config api.disablekey=true > /dev/null &
+    - sleep 20
+  script:
+    - cd ./tests/
+    - python3 e2e_zap.py
+  artifacts:
+      paths:
+        - ./tests/zap-report.json
+      expire_in: 1 week
