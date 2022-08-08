@@ -12,6 +12,7 @@ In this lab we use SAST Tools & DAST Tools on Pipeline DevOps
 DevSecOps, a relatively new term in the application security (AppSec) space, is about introducing security earlier in the software development life cycle (SDLC) by expanding the close collaboration between development and operations teams in the DevOps movement to include security teams as well. It requires a change in culture, process, and tools across the core functional teams comprising development, security, testing, and operations. 🚀
 
 ![Getting Started](33.png)
+![Getting Started](333.png)
 
 ### Without DecSecOps ###
 
